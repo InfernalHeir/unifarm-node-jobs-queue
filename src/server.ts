@@ -17,6 +17,7 @@ import { DEFAULT_VEST } from "./constants";
 dotenv.config({ path: `${__baseDir}/.env.${process.env.NODE_ENV}` });
 
 const PORT = Number(process.env.PORT);
+const HOSTNAME = String(process.env.REDIS_HOSTNAME);
 
 const app: Application = express();
 
@@ -92,6 +93,6 @@ app.use(function (req, res, next) {
    });
 });
 
-app.listen(PORT, async () => {
+app.listen(PORT, HOSTNAME, async () => {
    logger.info(`Queue server running at ${PORT}`);
 });
