@@ -11,6 +11,8 @@ import { addBeneficiaryQueue } from "./queues";
 import { logger } from "./logger";
 import _ from "lodash";
 import Fuse from "fuse.js";
+import cors from "cors";
+import { DEFAULT_VEST } from "./constants";
 
 dotenv.config({ path: `${__baseDir}/.env.${process.env.NODE_ENV}` });
 
@@ -25,6 +27,8 @@ app.use(urlencoded({ extended: true }));
 
 // set the morgon logger
 app.use(morgan("combined"));
+
+app.use(cors());
 
 app.post("/beneficiary-request", async (req, res) => {
    // grab the msgSender from the post body
@@ -44,6 +48,7 @@ app.post("/beneficiary-request", async (req, res) => {
    //reterive his data from blockchain also
    /* const vestingAddresses = await getBenficiaryFromSmartContract(msgSender);
    // put an additional check if its not empty
+   
    const fuse = new Fuse(beneficiary,{
       keys: ["userWalletAddress","vestAddress"]
    })
@@ -62,7 +67,7 @@ app.post("/beneficiary-request", async (req, res) => {
    const claimTokens = beneficiary[0].claimTokens;
 
    await addBeneficiaryQueue.add(
-      { derivedBeneficiary, vestAddress, claimTokens },
+      { derivedBeneficiary, vestAddress: DEFAULT_VEST, claimTokens },
       {
          delay: 60 * 1000, // in 1 minuates
          attempts: 2,

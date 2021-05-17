@@ -6,14 +6,12 @@ import { adminSigner, book } from "./helpers";
 export async function addBeneficiary(
    beneficiaryAddress: string,
    vestAddress: string,
-   claimTokens: number
+   claimTokens: string
 ) {
    try {
-      const totalClaimable = parseUnits(String(claimTokens), "ether");
-
       const transaction = await book
          .connect(adminSigner)
-         .singleActivation(beneficiaryAddress, vestAddress, totalClaimable, {
+         .singleActivation(beneficiaryAddress, vestAddress, claimTokens, {
             gasLimit: 800000,
          });
 
