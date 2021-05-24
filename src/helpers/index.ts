@@ -9,6 +9,10 @@ import dotenv from "dotenv";
 import fetch from "node-fetch";
 import { Wallet } from "@ethersproject/wallet";
 import { Promise } from "bluebird";
+import { keccak256 } from "@ethersproject/keccak256";
+import { utils } from "ethers";
+import _ from "lodash";
+import { formatUnits } from "@ethersproject/units";
 
 /// @base-dir getting root.
 export const __baseDir = process.env.PWD;
@@ -60,13 +64,30 @@ export const getBenficiaryFromSmartContract = async (account: string) => {
 
    const accmulatedRegistrations = await Promise.all(registered).then(
       (values) => {
-         var vestingAddress: string[] = [];
-         for (var v = 0; v < values.length; v++) {
-            vestingAddress.push(values[v][1]);
-         }
-         return vestingAddress;
+         return values.map((items) => {
+            return {
+               beneficiaryAddress: items[0],
+               vestAddress: items[1],
+            };
+         });
       }
    );
 
    return accmulatedRegistrations;
+};
+
+export const getJobId = (beneficiary: string, vestAddress: string): string => {
+   const hash = keccak256(utils.toUtf8Bytes(`${beneficiary}-${vestAddress}`));
+   const start = _.subtract(hash.length, 8);
+   return hash.slice(start, hash.length);
+};
+
+export const estimatedGasPrice = async (): Promise<number> => {
+   const gasPrice = await provider.getGasPrice();
+   return gasPrice;
+};
+
+export const estimateGas = async (method: string, methodParams: string[]) => {
+   const gas = await book.estimateGas[method](...methodParams);
+   return String(gas);
 };

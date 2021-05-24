@@ -1,6 +1,5 @@
 import { parseUnits } from "@ethersproject/units";
 import { logger } from "./logger";
-import { DEFAULT_VEST } from "./constants";
 import { adminSigner, book } from "./helpers";
 
 export async function addBeneficiary(

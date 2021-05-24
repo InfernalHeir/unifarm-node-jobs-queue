@@ -13,7 +13,7 @@ export const addBeneficiaryQueue = new Queue("addBeneficiaryQueue", {
    },
 });
 
-addBeneficiaryQueue.process(async (job: Job) => {
+addBeneficiaryQueue.process(async (job: Job, done) => {
    logger.info(`JOB: job started with ${job.id}`);
    try {
       await addBeneficiary(
@@ -23,9 +23,7 @@ addBeneficiaryQueue.process(async (job: Job) => {
       );
    } catch (error) {
       logger.error(`TX_ERORR: Holder ${job.data.derivedBeneficiary}`);
-      job.moveToFailed({
-         message: "TX_ERORR: exhausted",
-      });
+      throw new Error("some unexpected error");
    }
 });
 
