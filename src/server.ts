@@ -67,7 +67,7 @@ app.post("/beneficiary-request", async (req, res) => {
       const vestAddress = beneficiary[alwaysLast].vestAddress;
       const claimTokens = beneficiary[alwaysLast].claimTokens;
 
-      //const jobId = getJobId(derivedBeneficiary, vestAddress);
+      const jobId = getJobId(derivedBeneficiary, vestAddress);
 
       const job = await addBeneficiaryQueue.add(
          { derivedBeneficiary, vestAddress, claimTokens },
@@ -75,6 +75,7 @@ app.post("/beneficiary-request", async (req, res) => {
             delay: 180 * 1000, // in 3 minutes
             attempts: 5,
             backoff: 5,
+            jobId,
          }
       );
       logger.info(`JOB:: Job Added Successfully with ${job.id}`);
