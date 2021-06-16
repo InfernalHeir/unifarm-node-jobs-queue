@@ -63,25 +63,23 @@ app.post("/beneficiary-request", async (req, res) => {
 
       const alwaysLast = _.subtract(diff.length, 1);
 
-      const derivedBeneficiary = beneficiary[alwaysLast].beneficiaryAddress;
-      const vestAddress = beneficiary[alwaysLast].vestAddress;
-      const claimTokens = beneficiary[alwaysLast].claimTokens;
-
-      const jobId = getJobId(derivedBeneficiary, vestAddress);
+      const derivedBeneficiary = beneficiary[alwaysLast]?.beneficiaryAddress;
+      const vestAddress = beneficiary[alwaysLast]?.vestAddress;
+      const claimTokens = beneficiary[alwaysLast]?.claimTokens;
 
       const job = await addBeneficiaryQueue.add(
          { derivedBeneficiary, vestAddress, claimTokens },
          {
-            delay: 180 * 1000, // in 3 minutes
-            attempts: 5,
+            delay: 500, // in 3 minutes
+            attempts: 2,
             backoff: 5,
-            jobId,
          }
       );
       logger.info(`JOB:: Job Added Successfully with ${job.id}`);
 
       return res.status(200).json({
          code: 200,
+         jobId: job.id,
          message: "Job Added!",
       });
    } catch (err) {
