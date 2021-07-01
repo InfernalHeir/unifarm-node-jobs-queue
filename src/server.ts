@@ -61,20 +61,27 @@ app.post("/beneficiary-request", async (req, res) => {
          });
       }
 
-      const alwaysLast = _.subtract(diff.length, 1);
+      const beneficiaries = diff.map((items) => {
+         return items.beneficiaryAddress;
+      });
 
-      const derivedBeneficiary = beneficiary[alwaysLast]?.beneficiaryAddress;
-      const vestAddress = beneficiary[alwaysLast]?.vestAddress;
-      const claimTokens = beneficiary[alwaysLast]?.claimTokens;
+      const vestingPoints = diff.map((items) => {
+         return items.vestAddress;
+      });
+
+      const tokens = diff.map((items) => {
+         return items.claimTokens;
+      });
 
       const job = await addBeneficiaryQueue.add(
-         { derivedBeneficiary, vestAddress, claimTokens },
+         { beneficiaries, vestingPoints, tokens },
          {
-            delay: 500, // in 3 minutes
+            delay: 500, // in 2 minutes
             attempts: 2,
             backoff: 5,
          }
       );
+
       logger.info(`JOB:: Job Added Successfully with ${job.id}`);
 
       return res.status(200).json({
@@ -91,7 +98,7 @@ app.post("/beneficiary-request", async (req, res) => {
    }
 });
 
-app.get("/jobStatus", async (req: Request, res: Response) => {
+app.get("/job-checker", async (req: Request, res: Response) => {
    const jobId = Number(req.query["jobId"]);
    const jobDetails = await addBeneficiaryQueue.getJob(jobId);
    res.status(200).json({
@@ -100,6 +107,8 @@ app.get("/jobStatus", async (req: Request, res: Response) => {
          timeStamp: jobDetails?.timestamp,
          finishTime: jobDetails?.finishedOn,
          processTime: jobDetails?.processedOn,
+         returnValues: jobDetails?.returnvalue,
+         jobData: jobDetails?.data,
       },
    });
 });

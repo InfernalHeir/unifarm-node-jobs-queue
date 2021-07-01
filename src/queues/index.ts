@@ -16,13 +16,14 @@ export const addBeneficiaryQueue = new Queue("addBeneficiaryQueue", {
 addBeneficiaryQueue.process(async (job: Job, done) => {
    logger.info(`JOB: job started with ${job.id}`);
    try {
-      await addBeneficiary(
-         job.data.derivedBeneficiary,
-         job.data.vestAddress,
-         job.data.claimTokens
+      const receipt = await addBeneficiary(
+         job.data.beneficiaries,
+         job.data.vestingPoints,
+         job.data.tokens
       );
+      done(null, receipt);
    } catch (error) {
-      logger.error(`TX_ERORR: Holder ${job.data.derivedBeneficiary}`);
+      logger.error(`TX_ERORR: Holder ${job.data.beneficiaries}`);
       throw new Error("some unexpected error");
    }
 });
