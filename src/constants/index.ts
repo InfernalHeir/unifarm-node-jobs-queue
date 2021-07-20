@@ -1,2 +1,2 @@
-export const UFARMBeneficiaryBookAddress: string = "0xAe93546f649F451E1269f6388FE23F726FB141c7";
-export const beneficiaryServerEndpoint = "https://dev.api.unifarm.co/beneficiaries";
+export const UFARMBeneficiaryBookAddress: string = "0x349d55f12fb166a926214ca0195a07a16fa4ccb1";
+export const beneficiaryServerEndpoint = "https://transit.unifarm.co/beneficiaries";

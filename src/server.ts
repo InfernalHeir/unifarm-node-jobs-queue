@@ -2,12 +2,7 @@ import express, { Application, Request, Response } from "express";
 import { json, urlencoded } from "body-parser";
 import dotenv from "dotenv";
 import morgan from "morgan";
-import {
-   benficiaryDetails,
-   getBenficiaryFromSmartContract,
-   __baseDir,
-   getJobId,
-} from "./helpers";
+import { benficiaryDetails, getBenficiaryFromSmartContract, __baseDir, getJobId } from "./helpers";
 import { addBeneficiaryQueue } from "./queues";
 import { logger } from "./logger";
 import _ from "lodash";
@@ -48,15 +43,13 @@ app.post("/beneficiary-request", async (req, res) => {
          });
       }
 
-      const registeredBeneficiary = await getBenficiaryFromSmartContract(
-         msgSender
-      );
+      const registeredBeneficiary = await getBenficiaryFromSmartContract(msgSender);
 
       const diff = _.xorBy(beneficiary, registeredBeneficiary, "vestAddress");
 
       if (_.isEmpty(diff)) {
-         return res.json({
-            code: 200,
+         return res.status(400).json({
+            code: 400,
             message: "there is no more vesting for this address.",
          });
       }
@@ -76,7 +69,7 @@ app.post("/beneficiary-request", async (req, res) => {
       const job = await addBeneficiaryQueue.add(
          { beneficiaries, vestingPoints, tokens },
          {
-            delay: 500, // in 2 minutes
+            delay: 2500, // in 2 minutes
             attempts: 2,
             backoff: 5,
          }
