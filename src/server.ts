@@ -31,7 +31,6 @@ app.post("/beneficiary-request", async (req, res) => {
    try {
       // grab the msgSender from the post body
       const msgSender = req.body.msgSender;
-
       // get beneficiary details
       const beneficiary = await benficiaryDetails(msgSender);
 
@@ -48,6 +47,7 @@ app.post("/beneficiary-request", async (req, res) => {
       const diff = _.xorBy(beneficiary, registeredBeneficiary, "vestAddress");
 
       if (_.isEmpty(diff)) {
+         logger.info(`ROUTE:: there is no more vesting for ${msgSender}. `);
          return res.status(400).json({
             code: 400,
             message: "there is no more vesting for this address.",
