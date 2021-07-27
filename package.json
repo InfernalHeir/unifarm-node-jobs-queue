@@ -1,7 +1,7 @@
 {
    "name": "unifarm-node-jobs-queue",
    "version": "1.0.0",
-   "main": "./dist/src/server.js",
+   "main": "./src/server.ts",
    "license": "MIT",
    "scripts": {
       "dev": "export NODE_ENV=dev && nodemon --ext '.ts' ./src/server.ts",

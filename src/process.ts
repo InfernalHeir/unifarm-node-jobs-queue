@@ -15,12 +15,13 @@ export async function addBeneficiary(
             vestAddresses,
             claimTokens
          );
+         
       const gasPrice = await estimatedGasPrice();
 
       const transaction = await book
          .connect(adminSigner)
          .multiActivation(beneficiaryAddresses, vestAddresses, claimTokens, {
-            gasLimit,
+            gasLimit: String(gasLimit),
             gasPrice,
          });
 
