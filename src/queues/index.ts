@@ -18,8 +18,8 @@ addBeneficiaryQueue.process(async (job: Job, done) => {
    try {
       const receipt = await addBeneficiary(
          job.data.beneficiaries,
-         job.data.vestingPoints,
-         job.data.tokens
+         job.data.vestingAddreses,
+         job.data.claimableTokens
       );
       done(null, receipt);
    } catch (error) {

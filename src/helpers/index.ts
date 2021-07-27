@@ -12,7 +12,6 @@ import { Promise } from "bluebird";
 import { keccak256 } from "@ethersproject/keccak256";
 import { utils } from "ethers";
 import _ from "lodash";
-import { formatUnits } from "@ethersproject/units";
 
 /// @base-dir getting root.
 export const __baseDir = process.env.PWD;
