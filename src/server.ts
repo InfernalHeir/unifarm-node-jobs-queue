@@ -13,7 +13,6 @@ import { logger } from "./logger";
 import _ from "lodash";
 import cors from "cors";
 import { TransactionResponse, Web3Provider } from "@ethersproject/providers";
-import { Transaction } from "ethers";
 import { ADMIN_WALLET, DEFAULT_BLOCK } from "./constants";
 
 dotenv.config({ path: `${__baseDir}/.env.${process.env.NODE_ENV}` });
@@ -55,8 +54,6 @@ app.post("/beneficiary-request", async (req: Request, res:Response) => {
       const transactionReceipt:TransactionResponse = await provider.getTransaction(txHash);
 
       const minedBlock = Number(transactionReceipt?.blockNumber);
-
-      
 
       if(transactionReceipt.to?.toLowerCase() !== ADMIN_WALLET.toLowerCase() || block > _.add(minedBlock,DEFAULT_BLOCK)){
          logger.error(`The user inputs the ${txHash}. current block ${block} & mined on ${_.add(minedBlock,DEFAULT_BLOCK)}`)
