@@ -14,7 +14,7 @@ import _ from "lodash";
 import cors from "cors";
 import { TransactionResponse, Web3Provider } from "@ethersproject/providers";
 import { Transaction } from "ethers";
-import { ADMIN_WALLET, DEFAULT_BLOCK } from "./constants";
+import { ADMIN_WALLET, DEFAULT_BLOCK, SUPPORTED_CHAINID, ZERO_ADDRESS } from "./constants";
 
 dotenv.config({ path: `${__baseDir}/.env.${process.env.NODE_ENV}` });
 
@@ -41,7 +41,11 @@ app.post("/beneficiary-request", async (req: Request, res:Response) => {
       const txHash = req.body.transactionHash as string;
       // get beneficiary details
       const beneficiary = await benficiaryDetails(msgSender);
-      
+
+      const filteredByChainId = beneficiary.filter((e) => {
+         return e.chainId === SUPPORTED_CHAINID;
+      })
+
       // reject it self if he/she not the beneficiary.
       if (_.isEmpty(beneficiary)) {
          return res.status(400).json({
@@ -56,8 +60,6 @@ app.post("/beneficiary-request", async (req: Request, res:Response) => {
 
       const minedBlock = Number(transactionReceipt?.blockNumber);
 
-      
-
       if(transactionReceipt.to?.toLowerCase() !== ADMIN_WALLET.toLowerCase() || block > _.add(minedBlock,DEFAULT_BLOCK)){
          logger.error(`The user inputs the ${txHash}. current block ${block} & mined on ${_.add(minedBlock,DEFAULT_BLOCK)}`)
          return res.status(401).json({
@@ -69,8 +71,12 @@ app.post("/beneficiary-request", async (req: Request, res:Response) => {
       const registeredBeneficiary = await getBenficiaryFromSmartContract(
          msgSender
       );
+      
+      const filter = registeredBeneficiary?.filter((e) => {
+         return e.vestAddress !== ZERO_ADDRESS
+      });
 
-      const diff = _.xorBy(beneficiary, registeredBeneficiary, "vestAddress");
+      const diff = _.xorBy(filteredByChainId, filter, "vestAddress");
 
       if (_.isEmpty(diff)) {
          logger.error(`there is no more vesting for ${msgSender}.`)
